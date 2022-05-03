@@ -7,7 +7,10 @@ Merge Sort algorithm, which greatly showcases the strengths
 of Functional Programming, and not so much those of OOP
 """
 import math
+import random
+import time
 
+@profile
 def mergeSort(ls):
     if not isinstance(ls, list):
         return ls
@@ -15,6 +18,7 @@ def mergeSort(ls):
         return ls
     return sortHelp(mergeSort(ls[:math.ceil(len(ls)/2)]), mergeSort(ls[math.ceil(len(ls)/2):]))
 
+@profile
 def sortHelp(left, right):
     if not left:
         if not right:
@@ -40,4 +44,19 @@ def sortHelp(left, right):
 
 
 if __name__ == '__main__':
-    print(mergeSort([5, 16, 3, 1, 12]))
+    times = []
+    for i in range(1000):
+        ls = []
+        for i in range(100):
+            ls.append(random.randint(1, 100))
+
+        begin = time.perf_counter()
+        ms = mergeSort(ls)
+        end = time.perf_counter()
+
+        times.append(end-begin)
+
+    avg = sum(times)/len(times)
+
+    print(f"Took {sum(times)} seconds to complete!\n")
+    print(f"The algorithm took {avg} to complete on average\n\n")

@@ -38,3 +38,10 @@ The functional programming version of this program is found in `ex2_MergeSort_FP
 here. The biggest strength seen here is how simple a functional program can be. A lot of the fat can be cut off of an algorithm when a purely
 functional paradigm is applied to it. There was also a somewhat significant increase in both time and memory performance when using the functional
 program over the object oriented one.
+
+## Conclusion
+
+In conclusion, I would still say that neither paradigm is strictly better than the other. However, in specific use cases, one method can certainly
+be better than the other. For algorithmic programs, I would say that functional programming is far better. For programs that require data abstraction
+and methods to be performed on that data, object-oriented programming would be a lot better to use than functional programming. So in a lot of cases
+in between those two extremes, I would say it's all a matter of personal preference.

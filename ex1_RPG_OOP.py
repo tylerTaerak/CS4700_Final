@@ -21,6 +21,9 @@ class Creature:
     def logMessage(self, message):
         print(message)
 
+    def attack(self, enemy):
+        pass
+
 class Hero (Creature):
     def __init__(self, name, damage, hp, heal):
         super().__init__(name, damage, hp)

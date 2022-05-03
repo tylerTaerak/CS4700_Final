@@ -6,7 +6,8 @@ Sort algorithm, which shows the strengths of FP and
 shows weaknesses of OOP
 """
 import math
-import copy
+import random
+import time
 
 class MergeSort:
 
@@ -53,20 +54,31 @@ class MergeSort:
     def __str__(self):
         return str(self.aslist(self.first))
 
+    def __iter__(self):
+        self.curr = self.first
+        return self
+
+    def __next__(self):
+        if not self.curr.right:
+            raise StopIteration
+        self.curr = self.curr.right
+        return self.curr
+
+    @profile
     def mergesort(self):
         if self.length == 0:
             return None
         if self.length == 1:
             return MergeSort([self.first.value])
         
-        selfCopy = copy.deepcopy(self)
         secondHalf = self.atindex(math.ceil(self.length/2), self.first)
         prev = secondHalf.left
         prev.right = None
         secondHalf.left = None
         part1 = MergeSort(self.aslist(self.first))
         part2 = MergeSort(self.aslist(secondHalf))
-        return MergeSort.sort(part1.mergesort(), part2.mergesort())
+        self = MergeSort.sort(part1.mergesort(), part2.mergesort())
+        return self
 
     def aslist(self, node):
         if not node:
@@ -82,8 +94,9 @@ class MergeSort:
 
     def rest(self):
         r = self.first.right
-        self.first.right = None
-        r.left = None
+        if r:
+            self.first.right = None
+            r.left = None
         return r
 
     def atindex(self, index, node):
@@ -92,8 +105,8 @@ class MergeSort:
         return self.atindex(index-1, node.right)
 
     @staticmethod
+    @profile
     def sort(left, right):
-        print(left, right)
         if not left:
             if not right:
                 return None
@@ -105,20 +118,36 @@ class MergeSort:
                 return MergeSort([right.first.value, left.first.value])
             if left.first < right.first:
                 return MergeSort([left.first.value] + right.aslist(right.first))
-            return MergeSort([right.first.value, left.first.value] + right.aslist(right.rest))
+            return MergeSort([right.first.value, left.first.value] + right.aslist(right.rest()))
         if not right:
             return left
         if right.length == 1:
             if left.first < right.first:
-                return MergeSort([left.first.value, right.first.value] + left.aslist(left.rest()))
+                ms = MergeSort.sort(MergeSort(left.aslist(left.rest())), right)
+                return MergeSort([left.first.value] + ms.aslist(ms.first))
             return MergeSort([right.first.value] + left.aslist(left.first))
         if left.first < right.first:
-            return MergeSort([left.first.value] + MergeSort.sort(left.rest(), MergeSort(right.aslist(right.first))))
-        return MergeSort([right.first.value] + MergeSort.sort(left, MergeSort(right.aslist(right.rest()))).aslist(right.first))
+            ms = MergeSort.sort(MergeSort(left.aslist(left.rest())), MergeSort(right.aslist(right.first)))
+            return MergeSort([left.first.value] + ms.aslist(ms.first))
+        ms = MergeSort.sort(left, MergeSort(right.aslist(right.rest())))
+        return MergeSort([right.first.value] + ms.aslist(ms.first))
 
 
 if __name__ == '__main__':
-    l = [5, 16, 3, 1, 12]
-    ms = MergeSort(l)
-    print(ms.aslist(ms.first))
-    print(ms.mergesort())
+    times = []
+    for i in range(1000):
+        l = []
+        for j in range(100):
+            l.append(random.randint(1, 100))
+        begin = time.perf_counter()
+
+        ms = MergeSort(l)
+        merged = ms.mergesort()
+
+        end = time.perf_counter()
+        times.append(end-begin)
+
+    avg = sum(times)/len(times)
+
+    print(f"Took a total of {sum(times)} seconds!\n")
+    print(f"The algorithm took {avg} seconds to complete on average (including object creation)\n\n")
